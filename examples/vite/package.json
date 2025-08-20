@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev": "vite --force",
+    "build": "tsc && vite build && npx http-server ./dist",
     "preview": "vite preview"
   },
   "devDependencies": {

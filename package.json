@@ -4,12 +4,15 @@
   "description": "Debug logging utility that is ignored by default in production builds",
   "main": "src/kunsul/index.ts",
   "exports": {
-    ".": {
-      "import": "./dist/esm/kunsul/index.mjs",
-      "require": "./dist/cjs/kunsul/index.cjs",
-      "browser": "./dist/umd/kunsul/index.js",
-      "types": "./dist/esm/kunsul/index.d.ts"
-    }
+    ".": [
+      {
+        "browser": "./dist/esm/kunsul/index.js",
+        "types": "./dist/esm/kunsul/index.d.ts",
+        "import": "./dist/umd/kunsul/index.js",
+        "require": "./dist/cjs/kunsul/index.cjs"
+      },
+      "./dist/kunsul.umd.js"
+    ]
   },
   "files": [
     "dist/"
@@ -33,6 +36,6 @@
     "development"
   ],
   "devDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "5.8.3"
   }
 }

@@ -1,26 +1,26 @@
-declare const KUNSUL_DEBUG: boolean;
+declare const KUNSUL_IGNORE_IN_BUILD: boolean;
 
 export interface LogOptions {
   includeInProd?: boolean;
 }
 
-const KUNSUL_DEBUG_ENABLED =
-  typeof KUNSUL_DEBUG !== "undefined" ? KUNSUL_DEBUG : false;
+const DO_WE_SHOW_LOGS =
+  typeof KUNSUL_IGNORE_IN_BUILD !== "undefined" ? !KUNSUL_IGNORE_IN_BUILD : true;
 
 export function log(message: string, options: LogOptions = {}): void {
-  if (KUNSUL_DEBUG_ENABLED) {
+  if (DO_WE_SHOW_LOGS) {
     console.log(message);
   }
 }
 
 export function warn(message: string, options: LogOptions = {}): void {
-  if (KUNSUL_DEBUG_ENABLED) {
+  if (DO_WE_SHOW_LOGS) {
     console.warn(message);
   }
 }
 
 export function error(message: string, options: LogOptions = {}): void {
-  if (KUNSUL_DEBUG_ENABLED) {
+  if (DO_WE_SHOW_LOGS) {
     console.error(message);
   }
 }

@@ -2,16 +2,19 @@
 
 - vite.config.ts
 
-**_KUNSUL_DEBUG_** is added in define, essentially if in ***development*** mode it's true otherwise false(ingored in build)
+**KUNSUL_IGNORE_IN_BUILD** is added in define, essentially if in ***production*** mode it's true otherwise false(ingored in build)
 
 ```ts
 import { defineConfig } from "vite";
 
-export default defineConfig(({ mode }) => ({
-  define: {
-    KUNSUL_DEBUG: JSON.stringify(mode === "development"),
-  },
-}));
+export default defineConfig(({ mode }) => {
+  return {
+    define: {
+     KUNSUL_IGNORE_IN_BUILD: JSON.stringify(mode === "production"),
+    },
+  };
+});
+
 ```
 
 

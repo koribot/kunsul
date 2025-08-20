@@ -1,6 +1,6 @@
 // can define this in various build tools such as vite, webpack, etc...
-// if you dont do this it will default to false and all the logging will be ignored in build
-globalThis.KUNSUL_DEBUG = true;
+// if you dont set this, all logs will be included in the build output
+globalThis.KUNSUL_IGNORE_IN_BUILD = true;
 const kunsul = require('../dist/kunsul.cjs');
 
 console.log('🧪 Testing CommonJS build...');

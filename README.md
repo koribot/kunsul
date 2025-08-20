@@ -6,8 +6,8 @@ A logging utility that is designed to be **ignored by build tools** in productio
 
 ## How It Works ⚙️
 
-- In **development**, set `KUNSUL_DEBUG = true` to enable logs.  
-- In **production**, set `KUNSUL_DEBUG = false` and build tools (like Webpack, Vite, Rollup, etc.) can eliminate logging calls during tree-shaking/minification.  
+- In **development**, set `KUNSUL_IGNORE_IN_BUILD = false` to always show logs or dont set anything(by default it will always show logs).  
+- In **production**, set `KUNSUL_IGNORE_IN_BUILD = true` and build tools (like Webpack, Vite, Rollup, etc.) can eliminate logging calls during tree-shaking/minification.  
 - This way, you keep helpful logs while developing without shipping them into production bundles.
 
 
@@ -30,7 +30,7 @@ import kunsul from "kunsul"
 kunsul.log("hello, world")
 
 // for cjs
-globalThis.KUNSUL_DEBUG = true; // you can toggle this in your build tool
+globalThis.KUNSUL_IGNORE_IN_BUILD = true; // you can toggle this in your build tool by default kunsul shows all logs
 const kunsul = require('kunsul');
 kunsul.log('CommonJS log test');
 
