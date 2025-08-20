@@ -1,0 +1,18 @@
+// ==========================================
+// tsconfig.json (Base configuration)
+// ==========================================
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "moduleResolution": "node",
+    "declaration": true,
+    "rootDir": "src",
+    "removeComments": true,
+    "noImplicitAny": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/kunsul/index.ts"],
+  "exclude": ["node_modules", "dist"]
+}

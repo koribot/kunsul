@@ -1,0 +1,38 @@
+{
+  "name": "kunsul",
+  "version": "0.0.2",
+  "description": "Debug logging utility that is ignored by default in production builds",
+  "main": "src/kunsul/index.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/kunsul/index.mjs",
+      "require": "./dist/cjs/kunsul/index.cjs",
+      "browser": "./dist/umd/kunsul/index.js",
+      "types": "./dist/esm/kunsul/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist",
+    "dev": "tsc --watch",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:umd": "tsc -p tsconfig.umd.json",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs && npm run build:umd && npm run fix-extensions",
+    "fix-extensions": "node scripts/fix-extensions.js",
+    "test:node-cjs": "node test/test-cjs.js",
+    "test:node-esm": "node test/test-esm.mjs",
+    "test": "npm run build && npm run test:node-cjs && npm run test:node-esm"
+  },
+  "keywords": [
+    "debug",
+    "logging",
+    "console",
+    "development"
+  ],
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
