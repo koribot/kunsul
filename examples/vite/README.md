@@ -2,7 +2,7 @@
 
 - vite.config.ts
 
-**KUNSUL_IGNORE_IN_BUILD** is added in define, essentially if in ***production*** mode it's true otherwise false(ingored in build)
+**KUNSUL_IGNORE_IN_BUILD** is added in define, essentially if in ***production*** mode it's true(ignore in builds) otherwise false (all logs will be included in build output)
 
 ```ts
 import { defineConfig } from "vite";
