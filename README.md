@@ -21,6 +21,21 @@ to see how to integrate in build-tools
 npm install kunsul
 ```
 
+### Usage
+
+```ts
+
+// for esm
+import kunsul from "kunsul"
+kunsul.log("hello, world")
+
+// for cjs
+globalThis.KUNSUL_DEBUG = true; // you can toggle this in your build tool
+const kunsul = require('kunsul');
+kunsul.log('CommonJS log test');
+
+```
+
 
 ### CURRENT WORKING/ACTIVE kunsul API'S
 
@@ -30,6 +45,8 @@ npm install kunsul
  kunsul.error
 
 ```
+
+
 ## Plans
 - expand logging capabilities
   - log,
