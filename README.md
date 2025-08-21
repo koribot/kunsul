@@ -2,6 +2,12 @@
 
 A logging utility that is designed to be **ignored by build tools** in production by toggling the `KUNSUL_IGNORE_IN_BUILD` constant.
 
+
+
+***NOTE***
+ - ESM works best in tree shaking/dead code elimination so I recommend to always use it
+ - when you use ***import*** it will automatically choose ESM
+
 ---
 
 ## How It Works ⚙️
@@ -26,10 +32,16 @@ npm install kunsul
 ```ts
 
 // for esm
+// best for tree shaking/dead code elimination
+globalThis.KUNSUL_IGNORE_IN_BUILD = true; // build-tools will ignore kunsul and will not include it in build-output
 import kunsul from "kunsul"
 kunsul.log("hello, world")
 
+
+
+
 // for cjs
+// although the logs wont show, the kunsul functions will still be in the build output due to cjs is not best for tree shaking in build-tools
 globalThis.KUNSUL_IGNORE_IN_BUILD = true; // you can toggle this in your build tool by default kunsul shows all logs
 const kunsul = require('kunsul');
 kunsul.log('CommonJS log test');
@@ -40,9 +52,24 @@ kunsul.log('CommonJS log test');
 ### CURRENT WORKING/ACTIVE kunsul API'S
 
 ```
- kunsul.log
- kunsul.warn
- kunsul.error
+  kunsul.log,
+  kunsul.info,
+  kunsul.debug,
+  kunsul.warn,
+  kunsul.error,
+  kunsul.group,
+  kunsul.groupEnd,
+  kunsul.groupCollapsed,
+  kunsul.table,
+  kunsul.time,
+  kunsul.timeEnd,
+  kunsul.count,
+  kunsul.countReset,
+  kunsul.trace,
+  kunsul.assert,
+  kunsul.clear,
+  kunsul.json,
+  kunsul.createLogger,
 
 ```
 

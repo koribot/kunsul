@@ -6,10 +6,10 @@
   "exports": {
     ".": [
       {
-        "browser": "./dist/esm/kunsul/index.js",
-        "types": "./dist/esm/kunsul/index.d.ts",
-        "import": "./dist/umd/kunsul/index.js",
-        "require": "./dist/cjs/kunsul/index.cjs"
+        "browser": "./dist/kunsul.esm.mjs",
+        "types": "./dist/kunsul.d.ts",
+        "import": "./dist/kunsul.esm.mjs",
+        "require": "./dist/kunsul.cjs"
       },
       "./dist/kunsul.umd.js"
     ]
