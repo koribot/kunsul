@@ -76,16 +76,7 @@ kunsul.log('CommonJS log test');
 
 ## Plans
 - expand logging capabilities
-  - log,
-  - info,
-  - debug,
-  - warn,
-  - error,
-  - trace,
-  - group,
-  - table,
-  - time,
-  - timeEnd,
   - fetch: fetchWithLog,
-  - createLogger
+  - maybe add kunsul.prod but still debating if its usefull since you can just do console.log....
   - .......
+- add more examples

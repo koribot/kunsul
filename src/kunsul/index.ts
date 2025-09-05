@@ -1,3 +1,7 @@
+/**
+ * false if you want this to not show in builds by default it will always show
+ * true if you want this to not show in builds
+ */
 declare const KUNSUL_IGNORE_IN_BUILD: boolean;
 
 export interface LogOptions {
