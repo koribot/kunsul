@@ -1,6 +1,6 @@
 # Kunsul 📝
 
-A logging utility that is designed to be **ignored by build tools** in production by toggling the `KUNSUL_IGNORE_IN_BUILD` constant.
+A simple logging utility wrapper that will be **ignored by build tools (vite, webpack, etc)** in production by toggling the `KUNSUL_IGNORE_IN_BUILD` constant.
 
 
 
