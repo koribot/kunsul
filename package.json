@@ -3,6 +3,7 @@
   "version": "0.0.3",
   "description": "Debug logging utility that is ignored by default in production builds",
   "main": "src/kunsul/index.ts",
+  "license": "MIT",
   "exports": {
     ".": [
       {
