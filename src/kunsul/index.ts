@@ -5,8 +5,10 @@
 declare const KUNSUL_IGNORE_IN_BUILD: boolean;
 
 export interface LogOptions {
-  prefix?: string;
-  timestamp?: boolean;
+  KUNSUL_OPTIONS: {
+    prefix?: string;
+    timestamp?: boolean;
+  };
 }
 
 const SHOULD_WE_SHOW_LOGS = (): boolean => {
@@ -17,33 +19,63 @@ const SHOULD_WE_SHOW_LOGS = (): boolean => {
 
 // --- Helpers ---
 function isLogOptions(obj: any): obj is LogOptions {
-  return (
-    obj &&
-    typeof obj === "object" &&
-    ("prefix" in obj || "timestamp" in obj)
-  );
+  return obj && typeof obj === "object" && "KUNSUL_OPTIONS" in obj;
 }
 
 function normalizeArgs(args: any[]): { options: LogOptions; logArgs: any[] } {
   if (args.length > 0 && isLogOptions(args[0])) {
     return { options: args[0], logArgs: args.slice(1) };
   }
-  return { options: {}, logArgs: args };
+  return {
+    options: {
+      KUNSUL_OPTIONS: {},
+    },
+    logArgs: args,
+  };
 }
 
-function formatArgs(args: any[], options: LogOptions = {}): any[] {
+/**
+ * Formats the arguments to be logged by prepending a timestamp and prefix (if options are provided)
+ * and wrapping the first argument in square brackets if it is a string.
+ *
+ * @param args - The arguments to be logged
+ * @param options - The options to format the arguments with
+ * @returns The formatted arguments
+ */
+function formatArgs(
+  args: any[],
+  options: LogOptions = {
+    KUNSUL_OPTIONS: {
+      prefix: undefined,
+      timestamp: false,
+    },
+  }
+): any[] {
   if (args.length === 0) return args;
-
+  // we only care about the first args since we just want to prepend the timestamp/prefix
   let first = args[0];
   if (typeof first === "string") {
-    if (options.prefix) {
-      first = `[${options.prefix}] ${first}`;
+    if (options?.KUNSUL_OPTIONS?.prefix) {
+      first = `[${options.KUNSUL_OPTIONS.prefix}] ${first}`;
     }
-    if (options.timestamp) {
+    if (options?.KUNSUL_OPTIONS?.timestamp) {
       const ts = new Date().toISOString();
       first = `${ts} ${first}`;
     }
     return [first, ...args.slice(1)];
+  }
+
+  if (typeof first === "object") {
+    const ts = new Date().toISOString();
+    let prefixes: string = "";
+    if (options?.KUNSUL_OPTIONS?.prefix) {
+      prefixes = `[${options.KUNSUL_OPTIONS.prefix}]`;
+    }
+    if (options?.KUNSUL_OPTIONS?.timestamp) {
+      prefixes = `${ts} ${prefixes}`;
+    }
+    if (prefixes === "") return [...args];
+    return [prefixes, first, ...args.slice(1)];
   }
 
   return args;
@@ -54,7 +86,7 @@ function formatArgs(args: any[], options: LogOptions = {}): any[] {
  * Logs messages to the console with optional formatting.
  *
  * 🔹 Argument Rules:
- * - The **first argument** may be a {@link LogOptions} object (e.g. `{ prefix: "DBG", timestamp: true }`).
+ * - The **first argument** may be a {@link LogOptions} object (e.g. `{KUNSUL_OPTIONS: { prefix: "DBG", timestamp: true }}`).
  * - If the first argument is NOT a {@link LogOptions}, all arguments are treated as log data.
  * - If the first argument is a {@link LogOptions}, all remaining arguments are treated as log data.
  *
@@ -64,7 +96,7 @@ function formatArgs(args: any[], options: LogOptions = {}): any[] {
  *
  * @example
  * // With prefix and timestamp
- * kunsul.log({ prefix: "TEST", timestamp: true }, "data", { foo: 1 });
+ * kunsul.log({ KUNSUL_OPTIONS: { prefix: "TEST", timestamp: true } }, "data", { foo: 1 });
  * => 2025-09-06T12:34:56.789Z [TEST] data { foo: 1 }
  *
  * @example
@@ -74,7 +106,7 @@ function formatArgs(args: any[], options: LogOptions = {}): any[] {
  *
  * @example
  * // With only prefix
- * kunsul.log({ prefix: "APP" }, "started");
+ * kunsul.log({ KUNSUL_OPTIONS: { prefix: "APP" } }, "started");
  * => [APP] started
  *
  * @note
@@ -92,7 +124,7 @@ export function log(...args: any[]): void {
  * Logs info messages to the console using `console.info` with optional formatting.
  *
  * 🔹 Argument Rules:
- * - The **first argument** may be a {@link LogOptions} object (e.g. `{ prefix: "DBG", timestamp: true }`).
+ * - The **first argument** may be a {@link LogOptions} object (e.g. `{KUNSUL_OPTIONS: { prefix: "DBG", timestamp: true }}`).
  * - If the first argument is NOT a {@link LogOptions}, all arguments are treated as log data.
  * - If the first argument is a {@link LogOptions}, all remaining arguments are treated as log data.
  *
@@ -101,7 +133,7 @@ export function log(...args: any[]): void {
  *   2. `(...data: any[])`
  *
  * @example
- * kunsul.info({ prefix: "INFO", timestamp: true }, "Server started", { port: 3000 });
+ * kunsul.info({ KUNSUL_OPTIONS: { prefix: "INFO", timestamp: true } }, "Server started", { port: 3000 });
  * => 2025-09-06T12:34:56.789Z [INFO] Server started { port: 3000 }
  *
  * @example
@@ -109,7 +141,7 @@ export function log(...args: any[]): void {
  * => Connected to database { db: "users" }
  *
  * @example
- * kunsul.info({ prefix: "APP" }, "Initialization complete");
+ * kunsul.info({ KUNSUL_OPTIONS: { prefix: "APP" } }, "Initialization complete");
  * => [APP] Initialization complete
  *
  * @note
@@ -134,7 +166,7 @@ export function info(...args: any[]): void {
  * @param args - Arguments to log.
  *
  * @example
- * kunsul.debug({ prefix: "DBG" }, "Debugging value", { foo: 42 });
+ * kunsul.debug({ KUNSUL_OPTIONS: { prefix: "DBG" } }, "Debugging value", { foo: 42 });
  * => [DBG] Debugging value { foo: 42 }
  */
 export function debug(...args: any[]): void {
@@ -155,7 +187,7 @@ export function debug(...args: any[]): void {
  * @param args - Arguments to log.
  *
  * @example
- * kunsul.warn({ prefix: "WARN" }, "Something might be wrong");
+ * kunsul.warn({ KUNSUL_OPTIONS: { prefix: "WARN" } }, "Something might be wrong");
  * => [WARN] Something might be wrong
  */
 export function warn(...args: any[]): void {
@@ -176,7 +208,7 @@ export function warn(...args: any[]): void {
  * @param args - Arguments to log.
  *
  * @example
- * kunsul.error({ prefix: "ERR" }, "An error occurred", new Error("Oops"));
+ * kunsul.error({ KUNSUL_OPTIONS: { prefix: "ERR" } }, "An error occurred", new Error("Oops"));
  * => [ERR] An error occurred Error: Oops
  */
 export function error(...args: any[]): void {
@@ -197,7 +229,7 @@ export function error(...args: any[]): void {
  * @param args - Arguments to create a group label.
  *
  * @example
- * kunsul.group({ prefix: "GROUP" }, "Starting process");
+ * kunsul.group({ KUNSUL_OPTIONS: { prefix: "GROUP" } }, "Starting process");
  * => [GROUP] Starting process
  */
 export function group(...args: any[]): void {
@@ -229,7 +261,7 @@ export function groupEnd(): void {
  * @param args - Arguments to create a collapsed group label.
  *
  * @example
- * kunsul.groupCollapsed({ prefix: "COLLAPSED" }, "Details hidden");
+ * kunsul.groupCollapsed({ KUNSUL_OPTIONS: { prefix: "COLLAPSED" } }, "Details hidden");
  * => [COLLAPSED] Details hidden
  */
 export function groupCollapsed(...args: any[]): void {
@@ -238,9 +270,6 @@ export function groupCollapsed(...args: any[]): void {
     console.groupCollapsed(...formatArgs(logArgs, options));
   }
 }
-
-
-
 
 /**
  * Logs data to the console using `console.table` with optional formatting.
@@ -254,22 +283,20 @@ export function groupCollapsed(...args: any[]): void {
  *
  * @example
  * // with options
- * kunsul.table({ prefix: "TABLE" }, { foo: 1, bar: 2 });
+ * kunsul.table({ KUNSUL_OPTIONS: { prefix: "TABLE" } }, { foo: 1, bar: 2 });
  * => [TABLE] { foo: 1, bar: 2 }
- * 
- * 
+ *
+ *
  * // without options
  * kunsul.table({ foo: 1, bar: 2 });
  * => { foo: 1, bar: 2 }
  */
 export function table(...args: any[]): void {
   if (SHOULD_WE_SHOW_LOGS()) {
-    const { options, logArgs } = normalizeArgs(args)
+    const { options, logArgs } = normalizeArgs(args);
     console.table(...formatArgs(logArgs, options));
   }
 }
-
-
 
 // Timers
 
@@ -284,10 +311,18 @@ export function table(...args: any[]): void {
  * @param options - Optional formatting options.
  *
  * @example
- * kunsul.time("myTimer", { prefix: "TIMER" });
+ * kunsul.time("myTimer", { KUNSUL_OPTIONS: { prefix: "TIMER" }});
  * => [TIMER] myTimer: <time>
  */
-export function time(label: string, options?: LogOptions): void {
+export function time(
+  label: string,
+  options: LogOptions = {
+    KUNSUL_OPTIONS: {
+      prefix: undefined,
+      timestamp: true,
+    },
+  }
+): void {
   if (SHOULD_WE_SHOW_LOGS()) {
     console.time(...formatArgs([label], options));
   }
@@ -304,17 +339,22 @@ export function time(label: string, options?: LogOptions): void {
  * @param options - Optional formatting options.
  *
  * @example
- * kunsul.timeEnd("myTimer", { prefix: "TIMER" });
+ * kunsul.timeEnd("myTimer", { KUNSUL_OPTIONS: { prefix: "TIMER" }});
  * => [TIMER] myTimer: <time>
  */
-export function timeEnd(label: string, options?: LogOptions): void {
+export function timeEnd(
+  label: string,
+  options: LogOptions = {
+    KUNSUL_OPTIONS: {
+      prefix: undefined,
+      timestamp: true,
+    },
+  }
+): void {
   if (SHOULD_WE_SHOW_LOGS()) {
     console.timeEnd(...formatArgs([label], options));
   }
 }
-
-
-
 
 // --- Count occurrences ---
 
@@ -329,12 +369,22 @@ export function timeEnd(label: string, options?: LogOptions): void {
  * @param options - Optional formatting options.
  *
  * @example
- * kunsul.count("myCounter", { prefix: "COUNTER" });
+ * kunsul.count("myCounter", { KUNSUL_OPTIONS: { prefix: "COUNTER" }});
  * => [COUNTER] myCounter: 1
  */
-export function count(label?: string, options: LogOptions = {}): void {
+export function count(
+  label?: string,
+  options: LogOptions = {
+    KUNSUL_OPTIONS: {
+      prefix: undefined,
+      timestamp: false,
+    },
+  }
+): void {
   if (SHOULD_WE_SHOW_LOGS()) {
-    console.count(label ? (formatArgs([label], options)[0] as string) : undefined);
+    console.count(
+      label ? (formatArgs([label], options)[0] as string) : undefined
+    );
   }
 }
 
@@ -349,12 +399,22 @@ export function count(label?: string, options: LogOptions = {}): void {
  * @param options - Optional formatting options.
  *
  * @example
- * kunsul.countReset("myCounter", { prefix: "COUNTER" });
+ * kunsul.countReset("myCounter", { KUNSUL_OPTIONS: { prefix: "COUNTER" }});
  * => [COUNTER] myCounter: 0
  */
-export function countReset(label?: string, options: LogOptions = {}): void {
+export function countReset(
+  label?: string,
+  options: LogOptions = {
+    KUNSUL_OPTIONS: {
+      prefix: undefined,
+      timestamp: false,
+    },
+  }
+): void {
   if (SHOULD_WE_SHOW_LOGS()) {
-    console.countReset(label ? (formatArgs([label], options)[0] as string) : undefined);
+    console.countReset(
+      label ? (formatArgs([label], options)[0] as string) : undefined
+    );
   }
 }
 
@@ -371,7 +431,7 @@ export function countReset(label?: string, options: LogOptions = {}): void {
  * @param args - Arguments to log.
  *
  * @example
- * kunsul.trace({ prefix: "TRACE" }, "Something happened");
+ * kunsul.trace({ KUNSUL_OPTIONS: { prefix: "TRACE" }}, "Something happened");
  * => [TRACE] Trace: Something happened
  *     at <stack trace>
  */
@@ -381,7 +441,6 @@ export function trace(...args: any[]): void {
     console.trace(...formatArgs(logArgs, options));
   }
 }
-
 
 // --- Assert ---
 
@@ -400,14 +459,19 @@ export function trace(...args: any[]): void {
  * @param options - Optional formatting options.
  *
  * @example
- * kunsul.assert(condition, "Something went wrong", expectedValue, { prefix: "ASSERT" });
+ * kunsul.assert(condition, "Something went wrong", expectedValue, { KUNSUL_OPTIONS: prefix: "ASSERT" }});
  * => [ASSERT] Assertion failed: Something went wrong. Expected <expectedValue> but got <actualValue>
  */
 export function assert(
   condition: boolean,
   message?: string,
   expectedValue?: any,
-  options: LogOptions = {}
+  options: LogOptions = {
+    KUNSUL_OPTIONS: {
+      prefix: undefined,
+      timestamp: false,
+    },
+  }
 ): void {
   if (SHOULD_WE_SHOW_LOGS()) {
     console.assert(
@@ -417,8 +481,6 @@ export function assert(
     );
   }
 }
-
-
 
 // --- Clear console ---
 /**
@@ -433,37 +495,48 @@ export function clear(): void {
   }
 }
 
-
-
 // --- JSON pretty printing ---
 
 /**
  * Logs a pretty-printed JSON object to the console using `console.log` with optional formatting.
  *
  * 🔹 Argument Rules:
- * - The **first argument** is the JSON object to log.
- * - The **second argument** is an optional {@link LogOptions} object.
+ * - The **first argument** may be a {@link LogOptions} object (e.g. `{KUNSUL_OPTIONS: { prefix: "DBG", timestamp: true }}`).
+ * - If the first argument is NOT a {@link LogOptions}, all arguments are treated as log data.
+ * - If the first argument is a {@link LogOptions}, all remaining arguments are treated as log data.
  *
- * @param obj - JSON object to log.
- * @param options - Optional formatting options.
+ * @param args - JSON object to log.
  *
  * @example
- * kunsul.json({ foo: 1, bar: 2 }, { prefix: "JSON" });
+ * // with options
+ * kunsul.json( { KUNSUL_OPTIONS: prefix: "JSON" }}, { foo: 1, bar: 2 });
  * => [JSON] {
  *   "foo": 1,
  *   "bar": 2
  * }
+ *
+ * @example
+ * // without options
+ * kunsul.json({ foo: 1, bar: 2 });
+ * => {
+ *   "foo": 1,
+ *   "bar": 2
+ * }
  */
-export function json(obj: any, options: LogOptions = {}): void {
+export function json(...obj: any[]): void {
   if (SHOULD_WE_SHOW_LOGS()) {
-    const formatted = JSON.stringify(obj, null, 2);
-    console.log(...formatArgs([formatted], options));
+    const { options, logArgs } = normalizeArgs(obj);
+    const formatted = logArgs
+      .map((arg) =>
+        typeof arg === "object" ? JSON.stringify(arg, null, 2) : String(arg)
+      )
+      .join(", \n"); 
+    const formattedWithPrefix = formatArgs([formatted], options);
+    console.log(...formattedWithPrefix);
   }
 }
 
-
 // --- Logger factory ---
-
 /**
  * Creates a new logger with default log options.
  *
@@ -493,7 +566,14 @@ export function json(obj: any, options: LogOptions = {}): void {
  * logger.log("Hello world");
  * => [LOG] Hello world
  */
-export function createLogger(defaultOptions: LogOptions) {
+export function createLogger(
+  defaultOptions: LogOptions = {
+    KUNSUL_OPTIONS: {
+      prefix: undefined,
+      timestamp: false,
+    },
+  }
+) {
   return {
     log: (...args: any[]) => log({ ...defaultOptions }, ...args),
     info: (...args: any[]) => info({ ...defaultOptions }, ...args),
@@ -502,9 +582,9 @@ export function createLogger(defaultOptions: LogOptions) {
     error: (...args: any[]) => error({ ...defaultOptions }, ...args),
     group: (...args: any[]) => group({ ...defaultOptions }, ...args),
     groupEnd,
-    groupCollapsed: (...args: any[]) => groupCollapsed({ ...defaultOptions }, ...args),
-    table: (...args: any[]) =>
-      table({ ...defaultOptions }, ...args),
+    groupCollapsed: (...args: any[]) =>
+      groupCollapsed({ ...defaultOptions }, ...args),
+    table: (...args: any[]) => table({ ...defaultOptions }, ...args),
     time: (label: string, options?: LogOptions) =>
       time(label, { ...defaultOptions, ...options }),
     timeEnd: (label: string, options?: LogOptions) =>
@@ -519,10 +599,13 @@ export function createLogger(defaultOptions: LogOptions) {
       message?: string,
       expectedValue?: any,
       options?: LogOptions
-    ) => assert(condition, message, expectedValue, { ...defaultOptions, ...options }),
+    ) =>
+      assert(condition, message, expectedValue, {
+        ...defaultOptions,
+        ...options,
+      }),
     clear,
-    json: (obj: any, options?: LogOptions) =>
-      json(obj, { ...defaultOptions, ...options }),
+    json: (...obj: any[]) => json({ ...defaultOptions }, ...obj),
   };
 }
 
@@ -548,4 +631,3 @@ const kunsul = {
 } as const;
 
 export default kunsul;
-
