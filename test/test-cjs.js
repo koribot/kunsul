@@ -6,6 +6,10 @@ const kunsul = require("../dist/kunsul.cjs");
 
 console.log("🧪 Testing CommonJS build...");
 kunsul.log("CommonJS log test");
+const dbg = kunsul.createLogger({ prefix: "DBG", timestamp: true });
+dbg.log("CommonJS dbg log test");
+kunsul.time("CommonJS time test", {prefix: "TIMER"},);
+kunsul.timeEnd("CommonJS time test", {prefix: "TIMER"});
 kunsul.warn("CommonJS warn test");
 kunsul.error("CommonJS error test");
 

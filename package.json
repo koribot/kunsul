@@ -1,6 +1,6 @@
 {
   "name": "kunsul",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Debug logging utility that is ignored by default in production builds",
   "main": "src/kunsul/index.ts",
   "license": "MIT",
@@ -37,6 +37,7 @@
     "development"
   ],
   "devDependencies": {
+    "strip-comments": "^2.0.1",
     "typescript": "5.8.3"
   }
 }

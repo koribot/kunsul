@@ -24,7 +24,11 @@ to see how to integrate in build-tools
 ## Installation
 
 ```bash
-npm install kunsul
+npm install kunsul 
+```
+or
+```bash
+npm install kunsul --save-dev
 ```
 
 ### Usage
